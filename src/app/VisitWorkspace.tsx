@@ -100,7 +100,7 @@ export function VisitWorkspace({
 
       <div className="summary-grid sticky-summary">
         <article className="summary-card">
-          <span>ליקויים פעילים</span>
+          <span>ליקויים פתוחים</span>
           <strong data-testid="active-defects-count">{summary.activeDefects}</strong>
         </article>
         <article className="summary-card">
@@ -108,7 +108,7 @@ export function VisitWorkspace({
           <strong data-testid="new-defects-count">{summary.newDefectsThisVisit}</strong>
         </article>
         <article className="summary-card">
-          <span>ליקויים שטופלו בביקור</span>
+          <span>טופלו בביקור</span>
           <strong data-testid="done-this-visit-count">{summary.doneThisVisit}</strong>
         </article>
         <article className="summary-card">
@@ -123,25 +123,27 @@ export function VisitWorkspace({
         </section>
       )}
 
-      <DefectList
-        defects={filteredDefects}
-        currentVisit={currentVisit}
-        filter={{ ...filter, visitId: currentVisit?.id }}
-        onFilterChange={setFilter}
-        onSaveDefect={handleSaveDefect}
-        onDeleteDefect={handleDeleteDefect}
-        onChangeStatus={(defect: Defect, status: DefectStatus, note?: string) =>
-          handleChangeStatus(defect, status, note)
-        }
-      />
+      <div className="visit-workspace-grid">
+        <DefectList
+          defects={filteredDefects}
+          currentVisit={currentVisit}
+          filter={{ ...filter, visitId: currentVisit?.id }}
+          onFilterChange={setFilter}
+          onSaveDefect={handleSaveDefect}
+          onDeleteDefect={handleDeleteDefect}
+          onChangeStatus={(defect: Defect, status: DefectStatus, note?: string) =>
+            handleChangeStatus(defect, status, note)
+          }
+        />
 
-      <TaskList
-        tasks={tasks}
-        onAddTask={handleAddTask}
-        onUpdateTask={handleUpdateTask}
-        onDeleteTask={handleDeleteTask}
-        onSeedTasks={handleSeedTasks}
-      />
+        <TaskList
+          tasks={tasks}
+          onAddTask={handleAddTask}
+          onUpdateTask={handleUpdateTask}
+          onDeleteTask={handleDeleteTask}
+          onSeedTasks={handleSeedTasks}
+        />
+      </div>
     </section>
   );
 }

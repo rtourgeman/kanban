@@ -160,6 +160,7 @@ h3 {
   background: transparent;
   color: var(--muted);
   font-weight: 700;
+  min-height: 38px;
 }
 
 .tab-bar button.active {
@@ -257,8 +258,8 @@ h3 {
 }
 
 .summary-card {
-  min-height: 82px;
-  padding: 0.85rem;
+  min-height: 70px;
+  padding: 0.7rem;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
@@ -273,8 +274,8 @@ h3 {
 
 .summary-card strong {
   display: block;
-  margin-block-start: 0.35rem;
-  font-size: 1.75rem;
+  margin-block-start: 0.3rem;
+  font-size: 1.55rem;
   line-height: 1;
 }
 
@@ -399,14 +400,40 @@ h3 {
 }
 
 .workspace-section {
+  position: relative;
   border-block-start: 1px solid var(--line);
   padding-block-start: 1rem;
+  min-width: 0;
+}
+
+.visit-workspace-grid {
+  direction: rtl;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  align-items: start;
+  min-width: 0;
+}
+
+.defects-panel,
+.tasks-panel {
+  direction: rtl;
+  min-width: 0;
+}
+
+.defects-panel {
+  order: 1;
+}
+
+.tasks-panel {
+  order: 2;
 }
 
 .inline-form {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0.5rem;
+  min-width: 0;
 }
 
 .task-list {
@@ -420,6 +447,7 @@ h3 {
   display: flex;
   align-items: center;
   gap: 0.65rem;
+  min-width: 0;
   padding: 0.75rem;
   border: 1px solid var(--line);
   border-radius: var(--radius);
@@ -432,8 +460,6 @@ h3 {
 }
 
 .checkbox-row {
-  position: relative;
-  z-index: 2;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
@@ -454,10 +480,9 @@ h3 {
 }
 
 .task-title {
-  position: relative;
-  z-index: 1;
   flex: 1 1 auto;
   min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .task-item .danger-button {
@@ -548,13 +573,15 @@ h3 {
 
 .segmented-control {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.45rem;
-  overflow-x: auto;
+  overflow-x: visible;
   padding-block-end: 0.25rem;
+  min-width: 0;
 }
 
 .segmented-control button {
-  flex: 0 0 auto;
+  flex: 1 1 auto;
   border: 1px solid var(--line);
   background: var(--surface-strong);
   color: var(--muted);
@@ -579,6 +606,7 @@ h3 {
 
 .defect-card {
   border-inline-start: 6px solid var(--line);
+  min-width: 0;
 }
 
 .defect-card.severity-high {
@@ -591,6 +619,7 @@ h3 {
 
 .defect-card-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 0.75rem;
   align-items: flex-start;
@@ -801,29 +830,26 @@ dd {
   .inline-form {
     grid-template-columns: minmax(0, 1fr) auto;
   }
-
 }
 
-@media (min-width: 960px) {
-  .visit-workspace {
-    grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
+@media (min-width: 901px) {
+  .visit-workspace-grid {
+    direction: ltr;
+    grid-template-columns: minmax(320px, 0.85fr) minmax(0, 1.35fr);
+    gap: 1.5rem;
     align-items: start;
   }
 
-  .visit-workspace > .section-heading,
-  .visit-workspace > .visit-details,
-  .visit-workspace > .summary-grid,
-  .visit-workspace > .quick-defect-section,
-  .visit-workspace > .bottom-action-bar {
-    grid-column: 1 / -1;
-  }
-
   .defects-panel {
-    grid-column: 1;
+    grid-column: 2;
+    grid-row: 1;
+    order: initial;
   }
 
   .tasks-panel {
-    grid-column: 2;
+    grid-column: 1;
+    grid-row: 1;
+    order: initial;
   }
 }
 

@@ -18,7 +18,7 @@ test('field engineer can carry defects across visits and report done/open counts
 
   await expect(page.getByRole('heading', { name: 'ביקור עבודה' })).toBeVisible();
   await page.getByPlaceholder('הוסף משימה מהירה').fill('בדיקת מעקה גג');
-  await page.getByRole('button', { name: 'הוסף משימה' }).click();
+  await page.getByPlaceholder('הוסף משימה מהירה').press('Enter');
   const addedTaskCheckbox = page.getByLabel('סמן בדיקת מעקה גג כבוצע');
   await addedTaskCheckbox.click({ force: true });
   await expect(addedTaskCheckbox).toBeChecked();
