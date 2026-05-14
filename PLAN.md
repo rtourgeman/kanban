@@ -402,9 +402,9 @@ type VisitReportData = {
 
 Checks:
 
-- [ ] `npm run typecheck`
-- [ ] `npm run test -- --run`
-- [ ] `npm run build`
+- [x] `npm run typecheck`
+- [x] `npm run test -- --run`
+- [x] `npm run build`
 
 ### Phase 1 — Domain model and local persistence
 
@@ -444,8 +444,8 @@ Tests:
 
 Checks:
 
-- [ ] `npm run typecheck`
-- [ ] `npm run test -- --run`
+- [x] `npm run typecheck`
+- [x] `npm run test -- --run`
 
 ### Phase 2 — Project dashboard, visit workspace, and tasks
 
@@ -479,9 +479,9 @@ Tests:
 
 Checks:
 
-- [ ] `npm run typecheck`
-- [ ] `npm run test -- --run`
-- [ ] `npm run build`
+- [x] `npm run typecheck`
+- [x] `npm run test -- --run`
+- [x] `npm run build`
 
 ### Phase 3 — Defect capture and lifecycle
 
@@ -511,9 +511,9 @@ Tests:
 
 Checks:
 
-- [ ] `npm run typecheck`
-- [ ] `npm run test -- --run`
-- [ ] `npm run build`
+- [x] `npm run typecheck`
+- [x] `npm run test -- --run`
+- [x] `npm run build`
 
 ### Phase 4 — Filters, search, and field usability polish
 
@@ -542,8 +542,8 @@ Tests:
 
 Checks:
 
-- [ ] `npm run typecheck`
-- [ ] `npm run test -- --run`
+- [x] `npm run typecheck`
+- [x] `npm run test -- --run`
 
 ### Phase 5 — Report preview and print/PDF export
 
@@ -576,9 +576,9 @@ Tests:
 
 Checks:
 
-- [ ] `npm run typecheck`
-- [ ] `npm run test -- --run`
-- [ ] `npm run build`
+- [x] `npm run typecheck`
+- [x] `npm run test -- --run`
+- [x] `npm run build`
 
 ### Phase 6 — PWA/offline readiness
 
@@ -592,9 +592,9 @@ Checks:
 
 Checks:
 
-- [ ] `npm run typecheck`
-- [ ] `npm run test -- --run`
-- [ ] `npm run build`
+- [x] `npm run typecheck`
+- [x] `npm run test -- --run`
+- [x] `npm run build`
 
 ### Phase 7 — End-to-end happy path and final QA
 
@@ -611,18 +611,18 @@ Checks:
   - verify active list shows 3 remaining defects
   - open report preview
   - verify report contains done-this-visit count and still-open count
-- [ ] Run full checks.
-- [ ] Fix failures.
+- [x] Run full checks.
+- [x] Fix failures.
 - [x] Remove unused code.
-- [ ] Ensure there are no console errors during core flow.
+- [x] Ensure there are no console errors during core flow.
 - [x] Ensure README has local run instructions.
 
 Final checks:
 
-- [ ] `npm run typecheck`
-- [ ] `npm run test -- --run`
-- [ ] `npm run build`
-- [ ] `npm run test:e2e` if Playwright is configured
+- [x] `npm run typecheck`
+- [x] `npm run test -- --run`
+- [x] `npm run build`
+- [x] `npm run test:e2e` if Playwright is configured
 
 ## Acceptance criteria
 
@@ -652,4 +652,4 @@ The build is acceptable when:
   - still-open defects
 - [x] The report can be printed/saved as PDF through the browser.
 - [x] Tests are meaningful and not excessive.
-- [ ] Typecheck, tests, and build pass.
+- [x] Typecheck, tests, and build pass.

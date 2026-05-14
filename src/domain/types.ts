@@ -159,6 +159,7 @@ export type ProjectSummary = {
 export type VisitReportData = {
   project: Project;
   visit: InspectionVisit;
+  visits: InspectionVisit[];
   generatedAt: string;
   counts: ProjectSummary;
   tasks: TaskItem[];
@@ -166,4 +167,13 @@ export type VisitReportData = {
   carriedOverActiveDefects: Defect[];
   doneThisVisit: Defect[];
   stillOpenDefects: Defect[];
+};
+
+export type ReportSnapshot = {
+  id: string;
+  projectId: string;
+  visitId: string;
+  generatedAt: string;
+  data: VisitReportData;
+  createdAt: string;
 };

@@ -17,7 +17,7 @@ describe('ReportPreview', () => {
     render(<ReportPreview report={report} onBack={() => undefined} />);
 
     expect(screen.getByRole('heading', { name: 'פרויקט הצפון' })).toBeInTheDocument();
-    expect(screen.getByText('רטיבות במרפסת')).toBeInTheDocument();
+    expect(screen.getAllByText('רטיבות במרפסת').length).toBeGreaterThan(0);
     expect(screen.getByText('חדשים בביקור')).toBeInTheDocument();
   });
 });

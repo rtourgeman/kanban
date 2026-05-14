@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { DEFECT_SEVERITY_LABELS, DEFECT_STATUS_LABELS } from '../../domain/defaults';
 import type { Defect, DefectSeverity, DefectStatus, PhotoAttachment, PhotoDraft } from '../../domain/types';
 import { validateDefectInput } from '../../domain/validation';
-import { imageFileToPhotoDraft } from '../../utils/images';
+import { assertPhotoStorageBudget, imageFileToPhotoDraft } from '../../utils/images';
 
 export type DefectFormValues = {
   title: string;
@@ -113,9 +113,11 @@ export function DefectForm({
     setImageError('');
     try {
       const draft = await imageFileToPhotoDraft(file);
-      setPhotos((current) => [...current, draft]);
-    } catch {
-      setImageError('לא ניתן לשמור את התמונה. אפשר לנסות תמונה אחרת.');
+      const next = [...photos, draft];
+      assertPhotoStorageBudget(next);
+      setPhotos(next);
+    } catch (photoError) {
+      setImageError(photoError instanceof Error ? photoError.message : 'לא ניתן לשמור את התמונה. אפשר לנסות תמונה אחרת.');
     }
   }
 

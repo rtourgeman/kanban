@@ -17,7 +17,6 @@ import { DefectForm, type DefectFormValues } from './DefectForm';
 
 type DefectListProps = {
   defects: Defect[];
-  allDefectsCount: number;
   currentVisit?: InspectionVisit;
   filter: DefectFilter;
   onFilterChange: (filter: DefectFilter) => void;
@@ -38,7 +37,6 @@ const filterModes: DefectFilterMode[] = [
 
 export function DefectList({
   defects,
-  allDefectsCount,
   currentVisit,
   filter,
   onFilterChange,
@@ -54,13 +52,12 @@ export function DefectList({
   }
 
   return (
-    <section className="workspace-section" aria-labelledby="defects-title">
+    <section className="workspace-section defects-panel" aria-labelledby="defects-title">
       <div className="section-heading compact">
         <div>
           <p className="eyebrow">ליקויים</p>
-          <h2 id="defects-title">רשם ליקויים לפרויקט</h2>
+          <h2 id="defects-title">ליקויים בפרויקט</h2>
         </div>
-        <span className="pill">{allDefectsCount} בהיסטוריה</span>
       </div>
 
       <div className="filter-panel" aria-label="סינון ליקויים">
@@ -110,7 +107,7 @@ export function DefectList({
       ) : (
         <div className="defect-list" data-testid="defect-list">
           {defects.map((defect, index) => (
-            <article className={`defect-card severity-${defect.severity}`} key={defect.id}>
+            <article className={`defect-card severity-${defect.severity}`} key={defect.id} data-testid="defect-card">
               <div className="defect-card-header">
                 <div>
                   <span className="defect-number">#{index + 1}</span>

@@ -40,7 +40,7 @@ export function TaskList({ tasks, onAddTask, onUpdateTask, onDeleteTask, onSeedT
   }
 
   return (
-    <section className="workspace-section" aria-labelledby="tasks-title">
+    <section className="workspace-section tasks-panel" aria-labelledby="tasks-title">
       <div className="section-heading compact">
         <div>
           <p className="eyebrow">משימות</p>
@@ -77,9 +77,14 @@ export function TaskList({ tasks, onAddTask, onUpdateTask, onDeleteTask, onSeedT
       ) : (
         <ul className="task-list">
           {tasks.map((task) => (
-            <li key={task.id} className={`task-item ${task.status === 'done' ? 'is-done' : ''}`}>
+            <li key={task.id} className={`task-item ${task.status === 'done' ? 'is-done' : ''}`} data-testid="task-item">
               <label className="checkbox-row">
-                <input type="checkbox" checked={task.status === 'done'} onChange={() => void handleToggle(task)} />
+                <input
+                  type="checkbox"
+                  aria-label={`סמן ${task.title} כבוצע`}
+                  checked={task.status === 'done'}
+                  onChange={() => void handleToggle(task)}
+                />
                 <span>{task.status === 'done' ? 'בוצע' : 'לביצוע'}</span>
               </label>
 
@@ -103,14 +108,16 @@ export function TaskList({ tasks, onAddTask, onUpdateTask, onDeleteTask, onSeedT
               )}
 
               <button
-                className="danger-button"
+                className="task-delete-button"
+                aria-label={`מחק משימה ${task.title}`}
+                title="מחק משימה"
                 onClick={() => {
                   if (window.confirm('למחוק את המשימה?')) {
                     void onDeleteTask(task.id);
                   }
                 }}
               >
-                מחק
+                ×
               </button>
             </li>
           ))}

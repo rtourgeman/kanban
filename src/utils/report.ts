@@ -11,6 +11,7 @@ import { nowIso } from './dates';
 export function buildVisitReportData(params: {
   project: Project;
   visit: InspectionVisit;
+  visits?: InspectionVisit[];
   tasks: TaskItem[];
   defects: Defect[];
   generatedAt?: string;
@@ -24,6 +25,7 @@ export function buildVisitReportData(params: {
   return {
     project,
     visit,
+    visits: params.visits?.length ? params.visits : [visit],
     generatedAt: params.generatedAt ?? nowIso(),
     counts: calculateProjectSummary(visitTasks, projectDefects, visit.id),
     tasks: visitTasks,

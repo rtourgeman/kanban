@@ -3,12 +3,17 @@ import { clearKanbanDbForTests } from './db';
 import {
   createDefect,
   createProject,
+  createReportSnapshot,
+  createTask,
   createVisit,
   getActiveProjectDefects,
   getAllProjectDefects,
+  getLatestReportSnapshotForVisit,
   updateDefect,
-  updateDefectStatus
+  updateDefectStatus,
+  seedVisitTasks
 } from './repositories';
+import { buildVisitReportData } from '../utils/report';
 
 describe('repository lifecycle helpers', () => {
   beforeEach(async () => {
@@ -72,5 +77,75 @@ describe('repository lifecycle helpers', () => {
     expect(updated.status).toBe('open');
     expect(updated.statusHistory).toHaveLength(defect.statusHistory.length);
     expect(new Date(updated.updatedAt).getTime()).toBeGreaterThanOrEqual(new Date(defect.updatedAt).getTime());
+  });
+
+  it('rejects lifecycle status mutation through generic defect update', async () => {
+    const project = await createProject({ name: 'אתר בדיקה' });
+    const visit = await createVisit({
+      projectId: project.id,
+      inspectorName: 'דנה',
+      visitDate: '2026-05-14'
+    });
+    const defect = await createDefect({
+      projectId: project.id,
+      firstSeenVisitId: visit.id,
+      title: 'סדק'
+    });
+
+    await expect(updateDefect(defect.id, { status: 'done' } as never)).rejects.toThrow(
+      'שינוי סטטוס חייב להתבצע דרך פעולת סטטוס ייעודית.'
+    );
+  });
+
+  it('adds only missing default task templates when seeding a visit', async () => {
+    const project = await createProject({ name: 'אתר בדיקה' });
+    const visit = await createVisit({
+      projectId: project.id,
+      inspectorName: 'דנה',
+      visitDate: '2026-05-14'
+    });
+    await createTask({
+      projectId: project.id,
+      visitId: visit.id,
+      title: 'בדיקת איטום'
+    });
+
+    const seeded = await seedVisitTasks(project.id, visit.id);
+    const titles = seeded.map((task) => task.title);
+
+    expect(seeded).toHaveLength(8);
+    expect(titles.filter((title) => title === 'בדיקת איטום')).toHaveLength(1);
+    expect(titles).toContain('צילום תיעוד כללי');
+  });
+
+  it('stores generated reports as immutable snapshots', async () => {
+    const project = await createProject({ name: 'אתר בדיקה' });
+    const visit = await createVisit({
+      projectId: project.id,
+      inspectorName: 'דנה',
+      visitDate: '2026-05-14'
+    });
+    const defect = await createDefect({
+      projectId: project.id,
+      firstSeenVisitId: visit.id,
+      title: 'ליקוי מקורי'
+    });
+
+    const snapshot = await createReportSnapshot(
+      buildVisitReportData({
+        project,
+        visit,
+        visits: [visit],
+        tasks: [],
+        defects: [defect],
+        generatedAt: '2026-05-14T10:00:00.000Z'
+      })
+    );
+
+    await updateDefect(defect.id, { title: 'ליקוי ששונה לאחר הדוח' });
+    const latest = await getLatestReportSnapshotForVisit(visit.id);
+
+    expect(latest?.id).toBe(snapshot.id);
+    expect(latest?.data.newDefects[0].title).toBe('ליקוי מקורי');
   });
 });

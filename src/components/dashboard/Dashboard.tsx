@@ -127,11 +127,11 @@ export function Dashboard({
           <strong>{summary.activeDefects}</strong>
         </article>
         <article className="summary-card">
-          <span>טופלו בביקור</span>
+          <span>ליקויים שטופלו בביקור</span>
           <strong>{summary.doneThisVisit}</strong>
         </article>
         <article className="summary-card">
-          <span>סה״כ היסטוריה</span>
+          <span>סה״כ ליקויים בפרויקט</span>
           <strong>{summary.totalProjectDefects}</strong>
         </article>
       </div>
@@ -176,7 +176,7 @@ export function Dashboard({
           ביקור חדש
         </button>
         <button className="secondary-button" onClick={onOpenReport} disabled={!currentProject || !currentVisit}>
-          הפק דו״ח
+          הפקת דוח ביקור
         </button>
       </div>
 

@@ -99,7 +99,7 @@ h3 {
   width: min(100%, 1120px);
   margin-inline: auto;
   padding: 1rem;
-  padding-block-end: 6rem;
+  padding-block-end: 2rem;
 }
 
 .app-header {
@@ -146,7 +146,7 @@ h3 {
   top: 0;
   z-index: 20;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 0.35rem;
   padding: 0.35rem;
   margin-block-end: 1rem;
@@ -183,6 +183,13 @@ h3 {
 
 .section-heading.compact {
   align-items: center;
+}
+
+.header-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.5rem;
 }
 
 .eyebrow {
@@ -260,7 +267,8 @@ h3 {
 .summary-card span {
   display: block;
   color: var(--muted);
-  font-size: 0.88rem;
+  font-size: 0.82rem;
+  line-height: 1.25;
 }
 
 .summary-card strong {
@@ -347,10 +355,47 @@ h3 {
   gap: 0.75rem;
 }
 
+.compact-visit-details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem 0.75rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 250, 242, 0.72);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.compact-visit-details details {
+  margin-inline-start: auto;
+}
+
+.compact-visit-details summary {
+  cursor: pointer;
+  color: var(--primary);
+  font-weight: 800;
+}
+
+.compact-visit-edit {
+  display: grid;
+  gap: 0.5rem;
+  min-width: min(24rem, calc(100vw - 3rem));
+  margin-block-start: 0.5rem;
+}
+
+.compact-field {
+  font-size: 0.85rem;
+}
+
+.compact-field input {
+  min-height: 38px;
+  padding: 0.45rem 0.6rem;
+}
+
 .sticky-summary {
-  position: sticky;
-  top: 4rem;
-  z-index: 10;
+  position: static;
 }
 
 .workspace-section {
@@ -372,8 +417,7 @@ h3 {
 }
 
 .task-item {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  display: flex;
   align-items: center;
   gap: 0.65rem;
   padding: 0.75rem;
@@ -388,9 +432,12 @@ h3 {
 }
 
 .checkbox-row {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   gap: 0.45rem;
+  min-width: 6.25rem;
   white-space: nowrap;
 }
 
@@ -404,6 +451,35 @@ h3 {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.5rem;
+}
+
+.task-title {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.task-item .danger-button {
+  flex: 0 0 auto;
+}
+
+.task-delete-button {
+  flex: 0 0 auto;
+  width: 2.25rem;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface-strong);
+  color: var(--muted);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.task-delete-button:hover {
+  border-color: #f0c8c0;
+  color: var(--danger);
 }
 
 .defect-form,
@@ -709,9 +785,12 @@ dd {
   }
 
   .form-grid,
-  .visit-details,
   .filters-grid,
   .status-update-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .compact-visit-edit {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -723,17 +802,11 @@ dd {
     grid-template-columns: minmax(0, 1fr) auto;
   }
 
-  .bottom-action-bar {
-    inset-inline: auto max(1rem, calc((100vw - 1120px) / 2 + 1rem));
-    width: min(460px, calc(100vw - 2rem));
-    border: 1px solid var(--line);
-    border-radius: var(--radius) var(--radius) 0 0;
-  }
 }
 
 @media (min-width: 960px) {
   .visit-workspace {
-    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+    grid-template-columns: minmax(0, 1.18fr) minmax(0, 0.82fr);
     align-items: start;
   }
 
@@ -743,6 +816,14 @@ dd {
   .visit-workspace > .quick-defect-section,
   .visit-workspace > .bottom-action-bar {
     grid-column: 1 / -1;
+  }
+
+  .defects-panel {
+    grid-column: 1;
+  }
+
+  .tasks-panel {
+    grid-column: 2;
   }
 }
 

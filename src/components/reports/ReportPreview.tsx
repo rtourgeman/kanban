@@ -2,7 +2,7 @@ import {
   DEFECT_SEVERITY_LABELS,
   DEFECT_STATUS_LABELS
 } from '../../domain/defaults';
-import type { Defect, TaskItem, VisitReportData } from '../../domain/types';
+import type { Defect, InspectionVisit, TaskItem, VisitReportData } from '../../domain/types';
 import { formatHebrewDate, formatHebrewDateTime } from '../../utils/dates';
 import { exportReportAsJson } from '../../utils/report';
 
@@ -24,14 +24,20 @@ function downloadJson(fileName: string, json: string): void {
 function ReportSection({
   title,
   defects,
-  emptyText
+  emptyText,
+  testId,
+  visits
 }: {
   title: string;
   defects: Defect[];
   emptyText: string;
+  testId: string;
+  visits: InspectionVisit[];
 }): JSX.Element {
+  const visitsById = new Map(visits.map((visit) => [visit.id, visit]));
+
   return (
-    <section className="report-section">
+    <section className="report-section" data-testid={testId}>
       <h2>{title}</h2>
       {defects.length === 0 ? (
         <p className="empty-state print-friendly">{emptyText}</p>
@@ -68,6 +74,16 @@ function ReportSection({
                   <dt>עדכון אחרון</dt>
                   <dd>{formatHebrewDateTime(defect.statusUpdatedAt)}</dd>
                 </div>
+                <div>
+                  <dt>זוהה לראשונה</dt>
+                  <dd>{formatHebrewDate(visitsById.get(defect.firstSeenVisitId)?.visitDate ?? defect.createdAt)}</dd>
+                </div>
+                {defect.doneAt && (
+                  <div>
+                    <dt>טופל בתאריך</dt>
+                    <dd>{formatHebrewDateTime(defect.doneAt)}</dd>
+                  </div>
+                )}
               </dl>
               {defect.description && <p>{defect.description}</p>}
               {defect.photos.length > 0 && (
@@ -152,19 +168,19 @@ export function ReportPreview({ report, onBack }: ReportPreviewProps): JSX.Eleme
       <div className="summary-grid report-summary" aria-label="סיכום דו״ח">
         <article className="summary-card">
           <span>סה״כ ליקויים</span>
-          <strong>{report.counts.totalProjectDefects}</strong>
+          <strong data-testid="report-total-defects">{report.counts.totalProjectDefects}</strong>
         </article>
         <article className="summary-card">
           <span>חדשים בביקור</span>
-          <strong>{report.counts.newDefectsThisVisit}</strong>
+          <strong data-testid="report-new-defects-count">{report.counts.newDefectsThisVisit}</strong>
         </article>
         <article className="summary-card">
           <span>טופלו בביקור</span>
-          <strong>{report.counts.doneThisVisit}</strong>
+          <strong data-testid="report-done-this-visit-count">{report.counts.doneThisVisit}</strong>
         </article>
         <article className="summary-card">
           <span>עדיין פתוחים</span>
-          <strong>{report.counts.activeDefects}</strong>
+          <strong data-testid="report-active-defects-count">{report.counts.activeDefects}</strong>
         </article>
       </div>
 
@@ -174,21 +190,29 @@ export function ReportPreview({ report, onBack }: ReportPreviewProps): JSX.Eleme
         title="ליקויים חדשים בביקור"
         defects={report.newDefects}
         emptyText="לא נרשמו ליקויים חדשים בביקור הזה."
+        testId="report-new-defects"
+        visits={report.visits}
       />
       <ReportSection
         title="ליקויים פתוחים מביקורים קודמים"
         defects={report.carriedOverActiveDefects}
         emptyText="אין ליקויים פעילים שנמשכו מביקורים קודמים."
+        testId="report-carried-over-defects"
+        visits={report.visits}
       />
       <ReportSection
         title="ליקויים שטופלו בביקור הזה"
         defects={report.doneThisVisit}
         emptyText="לא סומנו ליקויים כטופלו בביקור הזה."
+        testId="report-done-defects"
+        visits={report.visits}
       />
       <ReportSection
         title="ליקויים שעדיין פתוחים"
         defects={report.stillOpenDefects}
         emptyText="אין ליקויים פתוחים או בטיפול בזמן הפקת הדו״ח."
+        testId="report-still-open-defects"
+        visits={report.visits}
       />
     </section>
   );

@@ -1,35 +1,55 @@
-import type { Defect, InspectionVisit, Project, TaskItem } from '../domain/types';
+import type { Defect, InspectionVisit, Project, ReportSnapshot, TaskItem } from '../domain/types';
 
 const DB_NAME = 'construction-inspection-kanban';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
-export type StoreName = 'projects' | 'visits' | 'tasks' | 'defects';
+export type StoreName = 'projects' | 'visits' | 'tasks' | 'defects' | 'reports';
 
 type StoreRecordMap = {
   projects: Project;
   visits: InspectionVisit;
   tasks: TaskItem;
   defects: Defect;
+  reports: ReportSnapshot;
 };
 
 let databasePromise: Promise<IDBDatabase> | undefined;
 
-function createIndexes(db: IDBDatabase): void {
-  const projects = db.createObjectStore('projects', { keyPath: 'id' });
-  projects.createIndex('updatedAt', 'updatedAt');
+function ensureStore(db: IDBDatabase, transaction: IDBTransaction, storeName: StoreName): IDBObjectStore {
+  if (db.objectStoreNames.contains(storeName)) {
+    return transaction.objectStore(storeName);
+  }
 
-  const visits = db.createObjectStore('visits', { keyPath: 'id' });
-  visits.createIndex('projectId', 'projectId');
-  visits.createIndex('visitDate', 'visitDate');
+  return db.createObjectStore(storeName, { keyPath: 'id' });
+}
 
-  const tasks = db.createObjectStore('tasks', { keyPath: 'id' });
-  tasks.createIndex('projectId', 'projectId');
-  tasks.createIndex('visitId', 'visitId');
+function ensureIndex(store: IDBObjectStore, indexName: string, keyPath: string): void {
+  if (!store.indexNames.contains(indexName)) {
+    store.createIndex(indexName, keyPath);
+  }
+}
 
-  const defects = db.createObjectStore('defects', { keyPath: 'id' });
-  defects.createIndex('projectId', 'projectId');
-  defects.createIndex('firstSeenVisitId', 'firstSeenVisitId');
-  defects.createIndex('status', 'status');
+function createIndexes(db: IDBDatabase, transaction: IDBTransaction): void {
+  const projects = ensureStore(db, transaction, 'projects');
+  ensureIndex(projects, 'updatedAt', 'updatedAt');
+
+  const visits = ensureStore(db, transaction, 'visits');
+  ensureIndex(visits, 'projectId', 'projectId');
+  ensureIndex(visits, 'visitDate', 'visitDate');
+
+  const tasks = ensureStore(db, transaction, 'tasks');
+  ensureIndex(tasks, 'projectId', 'projectId');
+  ensureIndex(tasks, 'visitId', 'visitId');
+
+  const defects = ensureStore(db, transaction, 'defects');
+  ensureIndex(defects, 'projectId', 'projectId');
+  ensureIndex(defects, 'firstSeenVisitId', 'firstSeenVisitId');
+  ensureIndex(defects, 'status', 'status');
+
+  const reports = ensureStore(db, transaction, 'reports');
+  ensureIndex(reports, 'projectId', 'projectId');
+  ensureIndex(reports, 'visitId', 'visitId');
+  ensureIndex(reports, 'generatedAt', 'generatedAt');
 }
 
 export function openKanbanDb(): Promise<IDBDatabase> {
@@ -39,7 +59,11 @@ export function openKanbanDb(): Promise<IDBDatabase> {
 
       request.onupgradeneeded = () => {
         const db = request.result;
-        createIndexes(db);
+        if (!request.transaction) {
+          reject(new Error('לא ניתן לשדרג את מסד הנתונים המקומי.'));
+          return;
+        }
+        createIndexes(db, request.transaction);
       };
 
       request.onsuccess = () => resolve(request.result);
@@ -118,8 +142,9 @@ export async function deleteFromStore(storeName: StoreName, id: string): Promise
 
 export async function clearKanbanDbForTests(): Promise<void> {
   const db = await openKanbanDb();
-  const transaction = db.transaction(['projects', 'visits', 'tasks', 'defects'], 'readwrite');
-  ['projects', 'visits', 'tasks', 'defects'].forEach((storeName) => {
+  const storeNames: StoreName[] = ['projects', 'visits', 'tasks', 'defects', 'reports'];
+  const transaction = db.transaction(storeNames, 'readwrite');
+  storeNames.forEach((storeName) => {
     transaction.objectStore(storeName).clear();
   });
   await promisifyTransaction(transaction);

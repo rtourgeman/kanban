@@ -17,12 +17,40 @@ import type {
   NewVisitInput,
   PhotoAttachment,
   Project,
+  ReportSnapshot,
+  VisitReportData,
   TaskItem
 } from '../domain/types';
 import { validateDefectInput, validateTaskInput } from '../domain/validation';
 import { nowIso } from '../utils/dates';
 import { newId } from '../utils/ids';
+import { assertPhotoStorageBudget } from '../utils/images';
 import { deleteFromStore, getAllFromStore, getFromStore, putInStore, putManyInStore } from './db';
+
+export type DefectEditablePatch = Partial<
+  Pick<
+    Defect,
+    | 'title'
+    | 'description'
+    | 'location'
+    | 'trade'
+    | 'severity'
+    | 'responsibleParty'
+    | 'dueDate'
+    | 'photos'
+  >
+>;
+
+const STATUS_MUTATION_KEYS = [
+  'status',
+  'statusUpdatedAt',
+  'statusHistory',
+  'lastUpdatedVisitId',
+  'doneAt',
+  'doneVisitId',
+  'verifiedAt',
+  'closedAt'
+];
 
 function byUpdatedDesc<T extends { updatedAt: string }>(a: T, b: T): number {
   return b.updatedAt.localeCompare(a.updatedAt);
@@ -160,13 +188,16 @@ export async function createTask(input: NewTaskInput): Promise<TaskItem> {
 }
 
 export async function seedVisitTasks(projectId: string, visitId: string): Promise<TaskItem[]> {
-  const existing = await getTasks(projectId, visitId);
-  if (existing.some((task) => task.visitId === visitId)) {
-    return existing.filter((task) => task.visitId === visitId);
+  const existingVisitTasks = (await getTasks(projectId, visitId)).filter((task) => task.visitId === visitId);
+  const existingTemplateTitles = new Set(existingVisitTasks.map((task) => task.title.trim()));
+  const missingTemplates = DEFAULT_TASK_TEMPLATES.filter((title) => !existingTemplateTitles.has(title));
+
+  if (missingTemplates.length === 0) {
+    return existingVisitTasks;
   }
 
   const now = nowIso();
-  const tasks: TaskItem[] = DEFAULT_TASK_TEMPLATES.map((title) => ({
+  const tasks: TaskItem[] = missingTemplates.map((title) => ({
     id: newId('task'),
     projectId,
     visitId,
@@ -178,7 +209,8 @@ export async function seedVisitTasks(projectId: string, visitId: string): Promis
     updatedAt: now
   }));
 
-  return putManyInStore('tasks', tasks);
+  const created = await putManyInStore('tasks', tasks);
+  return [...existingVisitTasks, ...created].sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 }
 
 export async function updateTask(taskId: string, patch: Partial<TaskItem>): Promise<TaskItem> {
@@ -226,6 +258,7 @@ export async function createDefect(input: NewDefectInput): Promise<Defect> {
   const now = nowIso();
   const defectId = newId('defect');
   const status = input.status ?? 'open';
+  assertPhotoStorageBudget(input.photos ?? []);
   const defect: Defect = {
     id: defectId,
     projectId: input.projectId,
@@ -260,28 +293,32 @@ export async function createDefect(input: NewDefectInput): Promise<Defect> {
   return putInStore('defects', defect);
 }
 
-export async function updateDefect(
-  defectId: string,
-  patch: Partial<Omit<Defect, 'id' | 'projectId' | 'firstSeenVisitId' | 'createdAt' | 'statusHistory'>>
-): Promise<Defect> {
+export async function updateDefect(defectId: string, patch: DefectEditablePatch): Promise<Defect> {
   const existing = await getDefect(defectId);
   if (!existing) {
     throw new Error('הליקוי לא נמצא.');
+  }
+
+  if (STATUS_MUTATION_KEYS.some((key) => Object.prototype.hasOwnProperty.call(patch, key))) {
+    throw new Error('שינוי סטטוס חייב להתבצע דרך פעולת סטטוס ייעודית.');
   }
 
   const validation = validateDefectInput({ title: patch.title ?? existing.title });
   if (!validation.valid) {
     throw new Error(validation.errors[0]);
   }
+  if (patch.photos) {
+    assertPhotoStorageBudget(patch.photos);
+  }
 
   const now = nowIso();
   const updated: Defect = {
     ...existing,
-    ...patch,
     title: patch.title !== undefined ? patch.title.trim() : existing.title,
     description: patch.description !== undefined ? trimOptional(patch.description) : existing.description,
     location: patch.location !== undefined ? trimOptional(patch.location) : existing.location,
     trade: patch.trade !== undefined ? trimOptional(patch.trade) : existing.trade,
+    severity: patch.severity ?? existing.severity,
     responsibleParty:
       patch.responsibleParty !== undefined ? trimOptional(patch.responsibleParty) : existing.responsibleParty,
     dueDate: patch.dueDate !== undefined ? trimOptional(patch.dueDate) : existing.dueDate,
@@ -337,4 +374,33 @@ export async function getProjectDefectsUpdatedInVisit(visitId: string): Promise<
 
 export async function getProjectDefectsMarkedDoneInVisit(visitId: string): Promise<Defect[]> {
   return getDefectsMarkedDoneInVisit(await getAllFromStore('defects'), visitId);
+}
+
+export async function createReportSnapshot(data: VisitReportData): Promise<ReportSnapshot> {
+  const snapshot: ReportSnapshot = {
+    id: newId('report'),
+    projectId: data.project.id,
+    visitId: data.visit.id,
+    generatedAt: data.generatedAt,
+    data,
+    createdAt: nowIso()
+  };
+
+  return putInStore('reports', snapshot);
+}
+
+export async function getReportSnapshotsForProject(projectId: string): Promise<ReportSnapshot[]> {
+  return (await getAllFromStore('reports'))
+    .filter((report) => report.projectId === projectId)
+    .sort((a, b) => b.generatedAt.localeCompare(a.generatedAt));
+}
+
+export async function getReportSnapshotsForVisit(visitId: string): Promise<ReportSnapshot[]> {
+  return (await getAllFromStore('reports'))
+    .filter((report) => report.visitId === visitId)
+    .sort((a, b) => b.generatedAt.localeCompare(a.generatedAt));
+}
+
+export async function getLatestReportSnapshotForVisit(visitId: string): Promise<ReportSnapshot | undefined> {
+  return (await getReportSnapshotsForVisit(visitId))[0];
 }

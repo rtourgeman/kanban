@@ -1,5 +1,25 @@
 import type { PhotoDraft } from '../domain/types';
 
+const MAX_INPUT_IMAGE_BYTES = 15 * 1024 * 1024;
+const MAX_STORED_IMAGE_BYTES = 2.5 * 1024 * 1024;
+export const MAX_DEFECT_PHOTO_BYTES = 8 * 1024 * 1024;
+
+export function estimateDataUrlBytes(dataUrl: string): number {
+  const base64 = dataUrl.split(',')[1] ?? dataUrl;
+  return Math.ceil((base64.length * 3) / 4);
+}
+
+export function getPhotoDraftBytes(photo: PhotoDraft): number {
+  return estimateDataUrlBytes(photo.dataUrl);
+}
+
+export function assertPhotoStorageBudget(photos: PhotoDraft[]): void {
+  const totalBytes = photos.reduce((sum, photo) => sum + getPhotoDraftBytes(photo), 0);
+  if (totalBytes > MAX_DEFECT_PHOTO_BYTES) {
+    throw new Error('נפח התמונות לליקוי גדול מדי. יש להסיר תמונות או לבחור תמונות קטנות יותר.');
+  }
+}
+
 function readFileAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -19,6 +39,10 @@ function loadImage(dataUrl: string): Promise<HTMLImageElement> {
 }
 
 export async function imageFileToPhotoDraft(file: File, maxSize = 1280): Promise<PhotoDraft> {
+  if (file.size > MAX_INPUT_IMAGE_BYTES) {
+    throw new Error('התמונה גדולה מדי לשמירה מקומית. יש לבחור תמונה קטנה יותר.');
+  }
+
   const originalDataUrl = await readFileAsDataUrl(file);
 
   if (!file.type.startsWith('image/') || typeof document === 'undefined') {
@@ -54,7 +78,14 @@ export async function imageFileToPhotoDraft(file: File, maxSize = 1280): Promise
     }
 
     context.drawImage(image, 0, 0, width, height);
-    const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+    let compressedDataUrl = canvas.toDataURL('image/jpeg', 0.82);
+    if (estimateDataUrlBytes(compressedDataUrl) > MAX_STORED_IMAGE_BYTES) {
+      compressedDataUrl = canvas.toDataURL('image/jpeg', 0.65);
+    }
+
+    if (estimateDataUrlBytes(compressedDataUrl) > MAX_STORED_IMAGE_BYTES) {
+      throw new Error('התמונה עדיין גדולה מדי לאחר הקטנה. יש לבחור תמונה קטנה יותר.');
+    }
 
     return {
       dataUrl: compressedDataUrl,
@@ -63,7 +94,15 @@ export async function imageFileToPhotoDraft(file: File, maxSize = 1280): Promise
       width,
       height
     };
-  } catch {
+  } catch (error) {
+    if (error instanceof Error && error.message.includes('גדולה מדי')) {
+      throw error;
+    }
+
+    if (estimateDataUrlBytes(originalDataUrl) > MAX_STORED_IMAGE_BYTES) {
+      throw new Error('התמונה גדולה מדי לשמירה מקומית. יש לבחור תמונה קטנה יותר.');
+    }
+
     return {
       dataUrl: originalDataUrl,
       fileName: file.name,
