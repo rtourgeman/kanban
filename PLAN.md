@@ -386,19 +386,19 @@ type VisitReportData = {
 
 ### Phase 0 — Scaffold and baseline
 
-- [ ] Create Vite React TypeScript app if no app exists.
-- [ ] Add basic scripts:
+- [x] Create Vite React TypeScript app if no app exists.
+- [x] Add basic scripts:
   - `dev`
   - `build`
   - `typecheck`
   - `test`
   - `test:e2e` only when Playwright is added.
-- [ ] Configure TypeScript strict mode.
-- [ ] Add basic styling system.
-- [ ] Set app root to Hebrew RTL.
-- [ ] Add initial layout shell.
-- [ ] Add testing setup with Vitest and React Testing Library.
-- [ ] Add one smoke test that verifies the app renders.
+- [x] Configure TypeScript strict mode.
+- [x] Add basic styling system.
+- [x] Set app root to Hebrew RTL.
+- [x] Add initial layout shell.
+- [x] Add testing setup with Vitest and React Testing Library.
+- [x] Add one smoke test that verifies the app renders.
 
 Checks:
 
@@ -408,13 +408,13 @@ Checks:
 
 ### Phase 1 — Domain model and local persistence
 
-- [ ] Add domain types.
-- [ ] Add default task templates.
-- [ ] Add validation helpers for defects and tasks.
-- [ ] Add status transition helper for defects.
-- [ ] Add date utilities for `he-IL`.
-- [ ] Add IndexedDB storage wrapper.
-- [ ] Add repository functions:
+- [x] Add domain types.
+- [x] Add default task templates.
+- [x] Add validation helpers for defects and tasks.
+- [x] Add status transition helper for defects.
+- [x] Add date utilities for `he-IL`.
+- [x] Add IndexedDB storage wrapper.
+- [x] Add repository functions:
   - create/get/update project
   - create/get/update visit
   - create/update/delete task
@@ -425,14 +425,14 @@ Checks:
   - get defects first seen in visit
   - get defects updated in visit
   - get defects marked done in visit
-- [ ] Add summary calculation utility.
+- [x] Add summary calculation utility.
 
 Tests:
 
-- [ ] Summary counts test.
-- [ ] Defect validation test.
-- [ ] Defect status transition test.
-- [ ] Cross-visit carryover test:
+- [x] Summary counts test.
+- [x] Defect validation test.
+- [x] Defect status transition test.
+- [x] Cross-visit carryover test:
   - create visit 1
   - create 5 defects
   - create visit 2
@@ -440,7 +440,7 @@ Tests:
   - mark 2 as done
   - active list contains 3 defects
   - project history still contains all 5 defects
-- [ ] Storage wrapper can be mocked or tested lightly; do not over-test browser APIs.
+- [x] Storage wrapper can be mocked or tested lightly; do not over-test browser APIs.
 
 Checks:
 
@@ -449,16 +449,16 @@ Checks:
 
 ### Phase 2 — Project dashboard, visit workspace, and tasks
 
-- [ ] Build Home/project dashboard screen.
-- [ ] Build project creation/edit basics.
-- [ ] Build visit creation/edit basics.
-- [ ] When starting a new visit for an existing project, load/show active project defects.
-- [ ] Build task list.
-- [ ] Add task creation.
-- [ ] Add complete/incomplete toggle.
-- [ ] Add task edit/delete.
-- [ ] Seed useful inspection tasks for a new visit.
-- [ ] Persist tasks locally.
+- [x] Build Home/project dashboard screen.
+- [x] Build project creation/edit basics.
+- [x] Build visit creation/edit basics.
+- [x] When starting a new visit for an existing project, load/show active project defects.
+- [x] Build task list.
+- [x] Add task creation.
+- [x] Add complete/incomplete toggle.
+- [x] Add task edit/delete.
+- [x] Seed useful inspection tasks for a new visit.
+- [x] Persist tasks locally.
 
 Suggested seeded tasks:
 
@@ -473,9 +473,9 @@ Suggested seeded tasks:
 
 Tests:
 
-- [ ] Task summary unit test.
+- [x] Task summary unit test.
 - [ ] Optional component test for task add/toggle if quick.
-- [ ] Test that a new visit for an existing project can show active defects from the project store.
+- [x] Test that a new visit for an existing project can show active defects from the project store.
 
 Checks:
 
@@ -485,29 +485,29 @@ Checks:
 
 ### Phase 3 — Defect capture and lifecycle
 
-- [ ] Build quick `הוסף ליקוי` flow.
-- [ ] Add title/description/location fields.
-- [ ] Add status/severity defaults.
-- [ ] Add responsible party and due date optional fields.
-- [ ] Add camera/gallery input:
+- [x] Build quick `הוסף ליקוי` flow.
+- [x] Add title/description/location fields.
+- [x] Add status/severity defaults.
+- [x] Add responsible party and due date optional fields.
+- [x] Add camera/gallery input:
   - `accept="image/*"`
   - `capture="environment"`
-- [ ] Add photo preview.
-- [ ] Add image compression/resizing utility if practical.
-- [ ] Save defect locally as a project-level record with `firstSeenVisitId`.
-- [ ] Add edit defect.
-- [ ] Add delete defect with confirmation.
-- [ ] Add status change from the defect list/details screen.
-- [ ] Add quick action to mark defect as `done`.
-- [ ] Record status history when status changes.
-- [ ] Ensure done defects leave the default active list but remain available in history/all filter.
+- [x] Add photo preview.
+- [x] Add image compression/resizing utility if practical.
+- [x] Save defect locally as a project-level record with `firstSeenVisitId`.
+- [x] Add edit defect.
+- [x] Add delete defect with confirmation.
+- [x] Add status change from the defect list/details screen.
+- [x] Add quick action to mark defect as `done`.
+- [x] Record status history when status changes.
+- [x] Ensure done defects leave the default active list but remain available in history/all filter.
 
 Tests:
 
-- [ ] Component test: title-only defect can be saved.
-- [ ] Unit test: defect update keeps timestamps/status valid.
-- [ ] Unit test: marking defect done sets `doneAt`, `doneVisitId`, and status history.
-- [ ] Do not duplicate the same validation tests in component and domain layers.
+- [x] Component test: title-only defect can be saved.
+- [x] Unit test: defect update keeps timestamps/status valid.
+- [x] Unit test: marking defect done sets `doneAt`, `doneVisitId`, and status history.
+- [x] Do not duplicate the same validation tests in component and domain layers.
 
 Checks:
 
@@ -517,28 +517,28 @@ Checks:
 
 ### Phase 4 — Filters, search, and field usability polish
 
-- [ ] Add filters:
+- [x] Add filters:
   - all
   - active/open
   - in progress
   - done this visit
   - done/closed history
   - high/critical
-- [ ] Add text search by title/location/responsible party if simple.
-- [ ] Add summary cards:
+- [x] Add text search by title/location/responsible party if simple.
+- [x] Add summary cards:
   - active defects
   - new this visit
   - done this visit
   - total project defects
-- [ ] Improve mobile spacing and sticky primary actions.
-- [ ] Add empty states in Hebrew.
-- [ ] Add basic error handling for storage/image failures.
+- [x] Improve mobile spacing and sticky primary actions.
+- [x] Add empty states in Hebrew.
+- [x] Add basic error handling for storage/image failures.
 
 Tests:
 
-- [ ] Unit test for filter logic.
-- [ ] Unit test for active vs done/history list behavior.
-- [ ] No visual snapshot tests.
+- [x] Unit test for filter logic.
+- [x] Unit test for active vs done/history list behavior.
+- [x] No visual snapshot tests.
 
 Checks:
 
@@ -547,9 +547,9 @@ Checks:
 
 ### Phase 5 — Report preview and print/PDF export
 
-- [ ] Build report data mapping utility.
-- [ ] Build report preview screen.
-- [ ] Include:
+- [x] Build report data mapping utility.
+- [x] Build report preview screen.
+- [x] Include:
   - project/site details
   - inspector
   - visit date
@@ -561,18 +561,18 @@ Checks:
   - defects marked done in current visit
   - still-open defects after current visit
   - defect photos
-- [ ] Add print CSS:
+- [x] Add print CSS:
   - hide app navigation/buttons in print
   - page-friendly margins
   - avoid splitting defect cards awkwardly when practical
-- [ ] Add `הדפס / שמור כ־PDF` button using browser print.
-- [ ] Add optional JSON export if easy.
+- [x] Add `הדפס / שמור כ־PDF` button using browser print.
+- [x] Add optional JSON export if easy.
 
 Tests:
 
-- [ ] Unit test for report mapping.
-- [ ] Report mapping test should verify new, carried-over, done-this-visit, and still-open sections.
-- [ ] Component test or simple render test that report includes defect title and counts.
+- [x] Unit test for report mapping.
+- [x] Report mapping test should verify new, carried-over, done-this-visit, and still-open sections.
+- [x] Component test or simple render test that report includes defect title and counts.
 
 Checks:
 
@@ -582,13 +582,13 @@ Checks:
 
 ### Phase 6 — PWA/offline readiness
 
-- [ ] Add manifest.
-- [ ] Add app name and icons/placeholders.
-- [ ] Add offline-friendly configuration if using a PWA plugin.
-- [ ] Verify refresh keeps data.
-- [ ] Verify a later visit still shows open defects from earlier visits.
-- [ ] Verify app works on narrow mobile viewport.
-- [ ] Add accessible labels for key actions.
+- [x] Add manifest.
+- [x] Add app name and icons/placeholders.
+- [x] Add offline-friendly configuration if using a PWA plugin.
+- [x] Verify refresh keeps data.
+- [x] Verify a later visit still shows open defects from earlier visits.
+- [x] Verify app works on narrow mobile viewport.
+- [x] Add accessible labels for key actions.
 
 Checks:
 
@@ -598,7 +598,7 @@ Checks:
 
 ### Phase 7 — End-to-end happy path and final QA
 
-- [ ] Add one Playwright happy path:
+- [x] Add one Playwright happy path:
   - create/open project
   - create first visit
   - add task
@@ -613,9 +613,9 @@ Checks:
   - verify report contains done-this-visit count and still-open count
 - [ ] Run full checks.
 - [ ] Fix failures.
-- [ ] Remove unused code.
+- [x] Remove unused code.
 - [ ] Ensure there are no console errors during core flow.
-- [ ] Ensure README has local run instructions.
+- [x] Ensure README has local run instructions.
 
 Final checks:
 
@@ -628,28 +628,28 @@ Final checks:
 
 The build is acceptable when:
 
-- [ ] App is usable on a phone-sized viewport.
-- [ ] UI is Hebrew and RTL.
-- [ ] A user can start or continue a project.
-- [ ] A user can start a visit.
-- [ ] A user can add tasks quickly.
-- [ ] A user can mark tasks complete.
-- [ ] A user can add a defect with only a title.
-- [ ] A user can add optional description/location/photo to a defect.
-- [ ] A user can edit and delete a defect.
-- [ ] Defects and tasks persist after refresh.
-- [ ] Defects are stored at project level, not only visit level.
-- [ ] A new visit for the same project shows active defects from previous visits.
-- [ ] A user can mark an existing defect as done.
-- [ ] Done defects leave the default active list but remain in project history.
-- [ ] The app can show all defects ever recorded for the project.
-- [ ] A user can filter defects by status/severity.
-- [ ] A report preview is generated from the visit and project defect state.
-- [ ] The report distinguishes:
+- [x] App is usable on a phone-sized viewport.
+- [x] UI is Hebrew and RTL.
+- [x] A user can start or continue a project.
+- [x] A user can start a visit.
+- [x] A user can add tasks quickly.
+- [x] A user can mark tasks complete.
+- [x] A user can add a defect with only a title.
+- [x] A user can add optional description/location/photo to a defect.
+- [x] A user can edit and delete a defect.
+- [x] Defects and tasks persist after refresh.
+- [x] Defects are stored at project level, not only visit level.
+- [x] A new visit for the same project shows active defects from previous visits.
+- [x] A user can mark an existing defect as done.
+- [x] Done defects leave the default active list but remain in project history.
+- [x] The app can show all defects ever recorded for the project.
+- [x] A user can filter defects by status/severity.
+- [x] A report preview is generated from the visit and project defect state.
+- [x] The report distinguishes:
   - new defects in this visit
   - carried-over active defects
   - defects marked done in this visit
   - still-open defects
-- [ ] The report can be printed/saved as PDF through the browser.
-- [ ] Tests are meaningful and not excessive.
+- [x] The report can be printed/saved as PDF through the browser.
+- [x] Tests are meaningful and not excessive.
 - [ ] Typecheck, tests, and build pass.
